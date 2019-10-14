@@ -6,37 +6,17 @@
 
 <script>
 import React from "react";
+import { Platform } from "react-native";
 import { Root } from "native-base";
 // import { Icon } from "native-base";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { createAppContainer, 
         createStackNavigator, 
         createBottomTabNavigator,
-        createMaterialTopTabNavigator,
-        createMaterialBottomTabNavigator } from "vue-native-router";
+        createMaterialTopTabNavigator, } from "vue-native-router";
 // tabs
 import Home from "./tabs/Home";
 import Settings from "./tabs/Settings";
-
-const SettingsStack = createStackNavigator(
-    {
-        Settings: {
-            screen: Settings,
-            navigationOptions: {
-                title: 'Settings'
-            },
-        },
-    },
-    {
-        initialRouteName: 'Settings',
-        defaultNavigationOptions : {
-            headerStyle: {
-                backgroundColor: '#694fad',
-            },
-            headerTintColor: 'white',
-        },
-    },
-)
 
 const HomeStack = createStackNavigator(
     {
@@ -51,14 +31,35 @@ const HomeStack = createStackNavigator(
         initialRouteName: 'Home',
         defaultNavigationOptions : {
             headerStyle: {
-                backgroundColor: '#694fad',
+                backgroundColor: Platform.OS === 'ios' ? '' : '#694fad',
             },
-            headerTintColor: 'white',
+            headerTintColor: Platform.OS === 'ios' ? '' : 'white',
         },
     },
 );
-// const BottomTabNavigator = createBottomTabNavigator(
-const MaterialBottomTabNavigator = createMaterialBottomTabNavigator (
+
+const SettingsStack = createStackNavigator(
+    {
+        Settings: {
+            screen: Settings,
+            navigationOptions: {
+                title: 'Settings'
+            },
+        },
+    },
+    {
+        initialRouteName: 'Settings',
+        defaultNavigationOptions : {
+            headerStyle: {
+                backgroundColor: Platform.OS === 'ios' ? '' : '#694fad',
+            },
+            headerTintColor: Platform.OS === 'ios' ? '' : 'white',
+        },
+    },
+)
+
+
+const androidNavigator = createMaterialTopTabNavigator (
     {
         Home: {
             screen:HomeStack,
@@ -75,6 +76,13 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator (
     }, 
     {
         initialRouteName: 'Home',
+        tabBarOptions: {
+            showIcon: false,
+            style: {
+                // backgroundColor: '#f00',
+                marginTop: 24
+            }
+        },
         defaultNavigationOptions: ({ navigation }) => ({
             barStyle: { backgroundColor: '#694fad' },
             tabBarIcon: ({ focused, horizontal, tintColor }) => {
@@ -92,7 +100,49 @@ const MaterialBottomTabNavigator = createMaterialBottomTabNavigator (
         })
     }
 );
-const AppNavigator = createAppContainer(MaterialBottomTabNavigator);
+
+const iosNavigator = createBottomTabNavigator (
+    {
+        Home: {
+            screen:HomeStack,
+            navigationOptions: {
+                title: 'Inicio',
+            },
+        },
+        Settings: {
+            screen: SettingsStack,
+            navigationOptions: {
+                title: 'Configuración',
+            } 
+        },
+    }, 
+    {
+        initialRouteName: 'Home',
+        defaultNavigationOptions: ({ navigation }) => ({
+            // barStyle: { backgroundColor: '#694fad' },
+            tabBarIcon: ({ focused, horizontal, tintColor }) => {
+                const { routeName } = navigation.state;
+                let IconComponent = Ionicons;
+                let iconName;
+                if (routeName === 'Home') {
+                    // iconName = `md-information-circle${focused ? '' : '-outline'}`;
+                    iconName = `md-medkit`;
+                } else if (routeName === 'Settings') {
+                    iconName = `md-settings`;
+                }
+                return <IconComponent name={ iconName } size={ 28 } color={ tintColor }/>
+            }
+        })
+    }
+);
+
+// Dynamic navigation bar selection 
+const MainNavigator = Platform.select({
+    ios: iosNavigator ,
+    android: androidNavigator
+});
+
+const AppNavigator = createAppContainer(MainNavigator);
 
 export default {
     components: { Root, AppNavigator },
