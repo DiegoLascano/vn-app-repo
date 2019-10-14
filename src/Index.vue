@@ -32,6 +32,7 @@ const HomeStack = createStackNavigator(
         defaultNavigationOptions : {
             headerStyle: {
                 backgroundColor: Platform.OS === 'ios' ? '' : '#694fad',
+                marginTop: Platform.OS === 'ios' ? 0 : -24,
             },
             headerTintColor: Platform.OS === 'ios' ? '' : 'white',
         },
@@ -52,6 +53,7 @@ const SettingsStack = createStackNavigator(
         defaultNavigationOptions : {
             headerStyle: {
                 backgroundColor: Platform.OS === 'ios' ? '' : '#694fad',
+                marginTop: Platform.OS === 'ios' ? 0 : -24,
             },
             headerTintColor: Platform.OS === 'ios' ? '' : 'white',
         },
